@@ -13,19 +13,19 @@ import { Candidate } from '@candidate-platform/shared';
 import { CandidateStoreService } from '../../store/candidate.store';
 
 @Component({
-    selector: 'app-candidate-list',
-    standalone: true,
-    imports: [
-        CommonModule,
-        MatTableModule,
-        MatCardModule,
-        MatIconModule,
-        MatButtonModule,
-        MatChipsModule,
-        MatProgressBarModule,
-        MatTooltipModule,
-    ],
-    template: `
+  selector: 'app-candidate-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+  ],
+  template: `
     <mat-card>
       <mat-card-header>
         <mat-card-title>Candidates</mat-card-title>
@@ -39,7 +39,7 @@ import { CandidateStoreService } from '../../store/candidate.store';
           <mat-icon>error_outline</mat-icon> {{ err }}
         </div>
 
-        <table mat-table [dataSource]="candidates$ | async" class="full-width">
+        <table mat-table [dataSource]="(candidates$ | async) ?? []" class="full-width">
           <!-- Name -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -89,7 +89,7 @@ import { CandidateStoreService } from '../../store/candidate.store';
       </mat-card-content>
     </mat-card>
   `,
-    styles: [`
+  styles: [`
     .full-width { width: 100%; }
     .clickable-row { cursor: pointer; transition: background 0.2s; }
     .clickable-row:hover { background: rgba(0,0,0,.04); }
@@ -100,18 +100,18 @@ import { CandidateStoreService } from '../../store/candidate.store';
   `],
 })
 export class CandidateListComponent implements OnInit {
-    readonly displayedColumns = ['name', 'surname', 'seniority', 'years', 'availability'];
-    readonly candidates$: Observable<Candidate[]> = this.store.candidates$;
-    readonly loading$: Observable<boolean> = this.store.loading$;
-    readonly error$: Observable<string | null> = this.store.error$;
+  readonly displayedColumns = ['name', 'surname', 'seniority', 'years', 'availability'];
+  readonly candidates$: Observable<Candidate[]> = this.store.candidates$;
+  readonly loading$: Observable<boolean> = this.store.loading$;
+  readonly error$: Observable<string | null> = this.store.error$;
 
-    constructor(private store: CandidateStoreService, private router: Router) { }
+  constructor(private store: CandidateStoreService, private router: Router) { }
 
-    ngOnInit(): void {
-        this.store.loadAll();
-    }
+  ngOnInit(): void {
+    this.store.loadAll();
+  }
 
-    goToDetail(candidate: Candidate): void {
-        this.router.navigate(['/candidates', candidate.id]);
-    }
+  goToDetail(candidate: Candidate): void {
+    this.router.navigate(['/candidates', candidate.id]);
+  }
 }
