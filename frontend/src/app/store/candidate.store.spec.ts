@@ -51,9 +51,9 @@ describe('CandidateStoreService', () => {
 
         const snapshot = store.getSnapshot();
         expect(snapshot).toHaveLength(2);
-        // newest is first
-        expect(snapshot[0].name).toBe('Bob');
-        expect(snapshot[1].name).toBe('Alice');
+        // newest is last
+        expect(snapshot[0].name).toBe('Alice');
+        expect(snapshot[1].name).toBe('Bob');
     });
 
     it('removeCandidate() should filter out the correct id', () => {
