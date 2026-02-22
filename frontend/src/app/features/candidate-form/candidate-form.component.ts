@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-    FormBuilder,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
-    AbstractControl,
-    ValidationErrors,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,31 +18,31 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CandidateStoreService } from '../../store/candidate.store';
 
 function xlsxFileValidator(control: AbstractControl): ValidationErrors | null {
-    const file: File | null = control.value;
-    if (!file) return null;
-    const allowed = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel'];
-    if (!allowed.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
-        return { invalidFileType: true };
-    }
-    return null;
+  const file: File | null = control.value;
+  if (!file) return null;
+  const allowed = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel'];
+  if (!allowed.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+    return { invalidFileType: true };
+  }
+  return null;
 }
 
 @Component({
-    selector: 'app-candidate-form',
-    standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        MatSnackBarModule,
-    ],
-    template: `
+  selector: 'app-candidate-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+  ],
+  template: `
     <mat-card class="form-card">
       <mat-card-header>
         <mat-card-title>Add Candidate</mat-card-title>
@@ -93,7 +93,7 @@ function xlsxFileValidator(control: AbstractControl): ValidationErrors | null {
       </mat-card-content>
     </mat-card>
   `,
-    styles: [`
+  styles: [`
     .form-card { max-width: 480px; margin: 24px auto; }
     .full-width { width: 100%; margin-bottom: 8px; }
     .file-field { margin-bottom: 16px; }
@@ -106,48 +106,52 @@ function xlsxFileValidator(control: AbstractControl): ValidationErrors | null {
   `],
 })
 export class CandidateFormComponent implements OnInit {
-    form!: FormGroup;
-    selectedFileName = '';
-    readonly loading$ = this.store.loading$;
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  form!: FormGroup;
+  selectedFileName = '';
+  readonly loading$ = this.store.loading$;
 
-    constructor(
-        private fb: FormBuilder,
-        private store: CandidateStoreService,
-        private snackBar: MatSnackBar,
-    ) { }
+  constructor(
+    private fb: FormBuilder,
+    private store: CandidateStoreService,
+    private snackBar: MatSnackBar,
+  ) { }
 
-    ngOnInit(): void {
-        this.form = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(2)]],
-            surname: ['', [Validators.required, Validators.minLength(2)]],
-            file: [null, [Validators.required, xlsxFileValidator]],
-        });
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      surname: ['', [Validators.required, Validators.minLength(2)]],
+      file: [null, [Validators.required, xlsxFileValidator]],
+    });
+  }
+
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.selectedFileName = file?.name ?? '';
+    this.form.get('file')!.setValue(file);
+    this.form.get('file')!.markAsTouched();
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
 
-    onFileChange(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        const file = input.files?.[0] ?? null;
-        this.selectedFileName = file?.name ?? '';
-        this.form.get('file')!.setValue(file);
-        this.form.get('file')!.markAsTouched();
-    }
+    const { name, surname, file } = this.form.value;
+    const fd = new FormData();
+    fd.append('name', name.trim());
+    fd.append('surname', surname.trim());
+    fd.append('file', file);
 
-    onSubmit(): void {
-        if (this.form.invalid) {
-            this.form.markAllAsTouched();
-            return;
-        }
-
-        const { name, surname, file } = this.form.value;
-        const fd = new FormData();
-        fd.append('name', name.trim());
-        fd.append('surname', surname.trim());
-        fd.append('file', file);
-
-        this.store.create(fd).subscribe(() => {
-            this.snackBar.open('Candidate added successfully!', 'Close', { duration: 3000 });
-            this.form.reset();
-            this.selectedFileName = '';
-        });
-    }
+    this.store.create(fd).subscribe(() => {
+      this.snackBar.open('Candidate added successfully!', 'Close', { duration: 3000 });
+      this.form.reset();
+      this.selectedFileName = '';
+      if (this.fileInputRef) {
+        this.fileInputRef.nativeElement.value = '';
+      }
+    });
+  }
 }

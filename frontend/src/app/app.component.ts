@@ -5,9 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { CandidateFormComponent } from './features/candidate-form/candidate-form.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'candidate-platform-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatIconModule, CandidateFormComponent],
+  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatIconModule],
   template: `
     <mat-toolbar color="primary" class="toolbar">
       <mat-icon>people</mat-icon>
@@ -15,7 +15,6 @@ import { CandidateFormComponent } from './features/candidate-form/candidate-form
     </mat-toolbar>
 
     <main class="main-content">
-      <app-candidate-form></app-candidate-form>
       <router-outlet></router-outlet>
     </main>
   `,

@@ -69,10 +69,34 @@ export class CandidatesController {
     }
 
     @Patch(':id')
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: memoryStorage(),
+            fileFilter: (_req, file, cb) => {
+                if (!file.originalname.match(/\.(xlsx|xls)$/i)) {
+                    return cb(new BadRequestException('Only Excel files (.xlsx, .xls) are allowed'), false);
+                }
+                cb(null, true);
+            },
+        }),
+    )
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe({ transform: true, whitelist: true })) dto: UpdateCandidateDto,
+        @Body(new ValidationPipe({ transform: true, whitelist: true })) body: UpdateCandidateDto,
+        @UploadedFile() file?: Express.Multer.File,
     ) {
+        let excelData = {};
+        if (file) {
+            excelData = this.candidatesService.parseExcel(file.buffer);
+        }
+
+        const dto: UpdateCandidateDto = {
+            ...body,
+            ...(body.name ? { name: body.name.trim() } : {}),
+            ...(body.surname ? { surname: body.surname.trim() } : {}),
+            ...(Object.keys(excelData).length > 0 ? excelData : {}),
+        };
+
         return this.candidatesService.update(id, dto);
     }
 

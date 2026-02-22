@@ -12,18 +12,18 @@ import { Candidate } from '@candidate-platform/shared';
 import { CandidateService } from '../../services/candidate.service';
 
 @Component({
-    selector: 'app-candidate-detail',
-    standalone: true,
-    imports: [
-        CommonModule,
-        MatCardModule,
-        MatButtonModule,
-        MatIconModule,
-        MatChipsModule,
-        MatDividerModule,
-        MatProgressSpinnerModule,
-    ],
-    template: `
+  selector: 'app-candidate-detail',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
+  ],
+  template: `
     <div class="detail-container">
       <button mat-button (click)="goBack()">
         <mat-icon>arrow_back</mat-icon> Back to list
@@ -68,7 +68,7 @@ import { CandidateService } from '../../services/candidate.service';
       </ng-template>
     </div>
   `,
-    styles: [`
+  styles: [`
     .detail-container { max-width: 540px; margin: 24px auto; padding: 0 16px; }
     .detail-card { margin-top: 16px; }
     .avatar {
@@ -76,10 +76,13 @@ import { CandidateService } from '../../services/candidate.service';
       width: 40px; height: 40px; display: flex; align-items: center;
       justify-content: center; font-weight: bold;
     }
-    .details { padding: 16px 0; }
+    .details { padding: 16px 24px; }
     .detail-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+      padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .detail-row:last-child {
+      border-bottom: none;
     }
     .label { color: rgba(0,0,0,.6); font-size: 14px; }
     mat-chip.junior { background: #e3f2fd; color: #1565c0; }
@@ -91,21 +94,21 @@ import { CandidateService } from '../../services/candidate.service';
   `],
 })
 export class CandidateDetailComponent implements OnInit {
-    candidate$!: Observable<Candidate>;
+  candidate$!: Observable<Candidate>;
 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private candidateService: CandidateService,
-    ) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private candidateService: CandidateService,
+  ) { }
 
-    ngOnInit(): void {
-        this.candidate$ = this.route.paramMap.pipe(
-            switchMap((params) => this.candidateService.getOne(Number(params.get('id')))),
-        );
-    }
+  ngOnInit(): void {
+    this.candidate$ = this.route.paramMap.pipe(
+      switchMap((params) => this.candidateService.getOne(Number(params.get('id')))),
+    );
+  }
 
-    goBack(): void {
-        this.router.navigate(['/']);
-    }
+  goBack(): void {
+    this.router.navigate(['/']);
+  }
 }

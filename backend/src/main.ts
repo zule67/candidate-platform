@@ -6,8 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: process.env['FRONTEND_URL'] ?? 'http://localhost:4200',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With'],
+    credentials: false,
   });
 
   app.useGlobalPipes(
@@ -22,7 +24,7 @@ async function bootstrap() {
 
   const port = process.env['PORT'] ?? 3333;
   await app.listen(port);
-  Logger.log(`🚀 Backend running on http://localhost:${port}/api`);
+  Logger.log(`🚀 Backend running on http://localhost:${port}/api/candidates`);
 }
 
 bootstrap();

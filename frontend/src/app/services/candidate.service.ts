@@ -22,7 +22,7 @@ export class CandidateService {
         return this.http.post<Candidate>(this.base, formData);
     }
 
-    update(id: number, data: Partial<Candidate>): Observable<Candidate> {
+    update(id: number, data: Partial<Candidate> | FormData): Observable<Candidate> {
         return this.http.patch<Candidate>(`${this.base}/${id}`, data);
     }
 
