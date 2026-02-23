@@ -2,13 +2,18 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CandidateEntity } from '../candidates/candidate.entity';
 
 export const typeOrmConfig = (): TypeOrmModuleOptions => {
-    if (process.env['DATABASE_URL']) {
+    const dbUrl = process.env['DATABASE_URL'];
+    console.log('--- TYPEORM CONFIGURATION ---');
+    console.log('DATABASE_URL starts with:', dbUrl ? dbUrl.substring(0, 15) : 'UNDEFINED');
+    console.log('Fallback DB_HOST is:', process.env['DB_HOST']);
+
+    if (dbUrl) {
         return {
             type: 'postgres',
-            url: process.env['DATABASE_URL'],
+            url: dbUrl,
             entities: [CandidateEntity],
             synchronize: process.env['NODE_ENV'] !== 'production',
-            ssl: { rejectUnauthorized: false },
+            ssl: dbUrl.includes('.internal') ? false : { rejectUnauthorized: false },
         };
     }
 
