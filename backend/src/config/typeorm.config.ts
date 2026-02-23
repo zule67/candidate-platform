@@ -6,6 +6,7 @@ export const typeOrmConfig = (): TypeOrmModuleOptions => {
     console.log('--- TYPEORM CONFIGURATION ---');
     console.log('DATABASE_URL starts with:', dbUrl ? dbUrl.substring(0, 15) : 'UNDEFINED');
     console.log('Fallback DB_HOST is:', process.env['DB_HOST']);
+    console.log('ENV KEYS:', Object.keys(process.env).filter(k => k.includes('DB') || k.includes('DATA') || k.includes('PORT')).join(', '));
 
     if (dbUrl) {
         return {
